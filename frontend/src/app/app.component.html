@@ -1,0 +1,80 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="#" (click)="$event.preventDefault()"><span class="brand-mark">H</span><span>HIB<span class="brand-light">BANK</span></span></a>
+    <div class="topbar-right"><span class="secure"><i></i> Secure banking</span><button *ngIf="mode !== 'guest'" class="button button-quiet button-small" (click)="logout()">Sign out <span>↗</span></button></div>
+  </header>
+
+  <main *ngIf="mode === 'guest'" class="auth-layout">
+    <section class="welcome-panel">
+      <div class="eyebrow"><span class="eyebrow-line"></span> YOUR MONEY, IN GOOD HANDS</div>
+      <h1>Banking that<br><em>moves with you.</em></h1>
+      <p>Clear, thoughtful banking for the things that matter. Manage your account and settle up in just a few clicks.</p>
+      <div class="welcome-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-core">H</div><span class="art-star star-a">✳</span><span class="art-star star-b">✦</span><div class="art-label">A little more in control.</div></div>
+      <div class="welcome-footer"><span>HIB BANK</span><span>MADE FOR EVERYDAY</span></div>
+    </section>
+    <section class="auth-panel"><div class="auth-card">
+      <div class="auth-heading"><div class="section-kicker">WELCOME TO HIB</div><h2>{{ adminMode ? 'Admin access' : (registerMode ? 'Create your account' : 'Good to see you.') }}</h2><p>{{ adminMode ? 'Sign in to manage customer accounts.' : (registerMode ? 'A few details and you’re ready to go.' : 'Sign in to pick up where you left off.') }}</p></div>
+      <div class="tabs" *ngIf="!adminMode"><button [class.selected]="!registerMode" (click)="registerMode=false">Sign in</button><button [class.selected]="registerMode" (click)="registerMode=true">Create account</button></div>
+      <form *ngIf="!adminMode && !registerMode" [formGroup]="loginForm" (ngSubmit)="login()" class="form-stack">
+        <label>Username<input formControlName="username" autocomplete="username" placeholder="Your username"></label>
+        <label>Password<input type="password" formControlName="password" autocomplete="current-password" placeholder="Your password"></label>
+        <button class="button button-primary button-full" [disabled]="busy || loginForm.invalid">{{ busy ? 'Signing in…' : 'Sign in' }} <span>→</span></button>
+      </form>
+      <form *ngIf="!adminMode && registerMode" [formGroup]="registerForm" (ngSubmit)="register()" class="form-stack register-grid">
+        <label>First name<input formControlName="firstName" autocomplete="given-name" placeholder="First name"></label>
+        <label>Last name<input formControlName="lastName" autocomplete="family-name" placeholder="Last name"></label>
+        <label>Email address<input type="email" formControlName="email" autocomplete="email" placeholder="you@example.com"></label>
+        <label>Phone number<input formControlName="phoneNumber" autocomplete="tel" placeholder="Phone number"></label>
+        <label class="span-two">Address<input formControlName="address" autocomplete="street-address" placeholder="Street and number"></label>
+        <label>Country<input formControlName="country" autocomplete="country-name" placeholder="Country"></label>
+        <label>Username<input formControlName="username" autocomplete="username" placeholder="Choose a username"></label>
+        <label class="span-two">Password<input type="password" formControlName="password" autocomplete="new-password" placeholder="Create a password"></label>
+        <button class="button button-primary button-full span-two" [disabled]="busy || registerForm.invalid">{{ busy ? 'Creating account…' : 'Create account' }} <span>→</span></button>
+      </form>
+      <form *ngIf="adminMode" [formGroup]="adminForm" (ngSubmit)="adminLogin()" class="form-stack">
+        <label>Admin username<input formControlName="username" autocomplete="username" placeholder="Admin username"></label>
+        <label>Password<input type="password" formControlName="password" autocomplete="current-password" placeholder="Admin password"></label>
+        <button class="button button-primary button-full" [disabled]="busy || adminForm.invalid">{{ busy ? 'Signing in…' : 'Open admin dashboard' }} <span>→</span></button>
+      </form>
+      <div class="form-message" *ngIf="message" [class.message-error]="messageKind==='error'" [class.message-success]="messageKind==='success'">{{ message }}</div>
+      <button class="text-button admin-switch" (click)="toggleAdmin()">{{ adminMode ? '← Customer sign in' : 'Administrator access' }}</button>
+      <div class="form-footnote"><span>⌑</span> Your account is protected with secure sessions.</div>
+    </div></section>
+  </main>
+
+  <main *ngIf="mode === 'customer'" class="dashboard">
+    <div class="dash-heading"><div><div class="section-kicker">YOUR OVERVIEW</div><h1>Welcome back<span class="accent-period">.</span></h1><p>Here’s what’s happening with your account.</p></div><div class="user-chip"><span class="avatar">{{ initials(account) }}</span><span><strong>{{ fullName(account) }}</strong><small>{{ username(account) }}</small></span></div></div>
+    <section class="overview-grid">
+      <article class="balance-card"><div class="balance-top"><span>AVAILABLE BALANCE</span><span class="balance-icon">↗</span></div><div class="balance-amount">{{ money(balance(account)) }}</div><div class="balance-bottom"><span class="balance-status"><i></i> Account {{ accountActive(account) ? 'active' : 'inactive' }}</span><span>{{ account.frozen ? 'Deposits and withdrawals frozen' : 'Ready for everyday' }}</span></div><div class="balance-watermark">H</div></article>
+      <article class="quick-card"><div class="card-heading"><div><div class="section-kicker">MOVE MONEY</div><h3>Quick actions</h3></div><span class="quick-spark">✳</span></div><div class="action-buttons"><button class="action-button" (click)="transactionKind='deposit'; transactionOpen=!transactionOpen"><span class="action-icon deposit-icon">↓</span><span><b>Deposit</b><small>Add to your account</small></span><i>→</i></button><button class="action-button" (click)="transactionKind='withdraw'; transactionOpen=!transactionOpen"><span class="action-icon withdraw-icon">↑</span><span><b>Withdraw</b><small>Take out money</small></span><i>→</i></button></div>
+        <form *ngIf="transactionOpen" [formGroup]="amountForm" (ngSubmit)="submitTransaction()" class="inline-form"><label>{{ transactionKind==='deposit' ? 'Deposit amount' : 'Withdrawal amount' }}<span class="money-input"><span>€</span><input type="number" min="0.01" step="0.01" formControlName="amount" placeholder="0.00"></span><small class="field-hint">Up to 2 decimal places</small></label><button class="button button-primary" [disabled]="busy || amountForm.invalid">{{ transactionKind==='deposit' ? 'Deposit' : 'Withdraw' }}</button></form>
+      </article>
+    </section>
+    <section class="content-grid">
+      <article class="surface requests-surface"><div class="surface-heading"><div><div class="section-kicker">PEER TO PEER</div><h3>Payment requests</h3></div><button class="button button-outline button-small" (click)="refreshRequests()">↻ Refresh</button></div>
+        <form [formGroup]="requestForm" (ngSubmit)="createRequest()" class="request-form"><label>Request from<input formControlName="recipientUsername" placeholder="Username"></label><label>Amount<span class="money-input"><span>€</span><input type="number" min="0.01" step="0.01" formControlName="amount" placeholder="0.00"></span><small class="field-hint">Up to 2 decimal places</small></label><label class="request-description">What’s it for?<input formControlName="description" placeholder="Add a note"></label><label class="check-label"><input type="checkbox" formControlName="editable"><span>Allow amount edits</span></label><button class="button button-primary" [disabled]="busy || requestForm.invalid">Send request <span>→</span></button></form>
+        <div class="list-title"><span>YOUR INBOX</span><span class="count-pill">{{ requests.length }}</span></div>
+        <div *ngIf="requests.length===0" class="empty-state"><span class="empty-icon">↔</span><strong>All caught up</strong><p>Payment requests will appear here.</p></div>
+        <div *ngFor="let item of requests; trackBy: trackRequest" class="request-row"><span class="request-avatar">{{ requestInitial(item) }}</span><div class="request-info"><strong>{{ requestTitle(item) }}</strong><small>{{ item.description || 'Payment request' }} · {{ dateLabel(item) }}</small><small *ngIf="notificationText(item)" class="request-notification">{{ notificationText(item) }}</small></div><div class="request-amount"><strong>{{ money(item.amount) }}</strong><span class="status-pill" [ngClass]="statusClass(item.status)">{{ prettyStatus(item.status) }}</span></div><div class="request-actions" *ngIf="canDecide(item)"><button class="icon-button approve" title="Approve request" (click)="decide(item,true)">✓</button><button class="icon-button reject" title="Reject request" (click)="decide(item,false)">×</button></div></div>
+      </article>
+      <aside class="side-column"><article class="surface account-details"><div class="section-kicker">ACCOUNT DETAILS</div><h3>Your account</h3><div class="detail-line"><span>Account holder</span><strong>{{ fullName(account) }}</strong></div><div class="detail-line"><span>Username</span><strong>{{ username(account) }}</strong></div><div class="detail-line"><span>Email</span><strong>{{ account.email || '—' }}</strong></div><div class="detail-line"><span>Account status</span><strong [class.good-text]="accountActive(account)" [class.bad-text]="!accountActive(account)">{{ accountActive(account) ? 'Active' : 'Inactive' }}</strong></div></article><article class="tip-card"><span class="tip-mark">✦</span><div><strong>A note on requests</strong><p>Only approve requests you recognize. You’ll see the amount and sender before confirming.</p></div></article></aside>
+    </section>
+    <div class="form-message dashboard-message" *ngIf="message" [class.message-error]="messageKind==='error'" [class.message-success]="messageKind==='success'">{{ message }}</div>
+  </main>
+
+  <main *ngIf="mode === 'admin'" class="dashboard admin-dashboard">
+    <div class="dash-heading"><div><div class="section-kicker">ADMINISTRATION</div><h1>Customer accounts<span class="accent-period">.</span></h1><p>Review account status and manage customer access.</p></div><div class="admin-badge"><span>✦</span> Administrator</div></div>
+    <section class="admin-stats"><article class="stat-card"><span class="stat-label">TOTAL CUSTOMERS</span><strong>{{ customers.length }}</strong><small>Registered accounts</small></article><article class="stat-card"><span class="stat-label">ACTIVE ACCOUNTS</span><strong>{{ countActive() }}</strong><small>Can sign in and send requests</small></article><article class="stat-card"><span class="stat-label">FROZEN ACCOUNTS</span><strong>{{ countFrozen() }}</strong><small>Deposits and withdrawals paused</small></article></section>
+    <section class="surface customer-table"><div class="surface-heading"><div><div class="section-kicker">ACCOUNT DIRECTORY</div><h3>All customers</h3></div><button class="button button-outline button-small" (click)="loadCustomers()">↻ Refresh</button></div>
+      <div *ngIf="customers.length===0" class="empty-state"><span class="empty-icon">⌂</span><strong>No customer records found</strong><p>Customer accounts will appear here.</p></div>
+      <div class="table-wrap" *ngIf="customers.length"><table><thead><tr><th>CUSTOMER</th><th>USERNAME</th><th>BALANCE</th><th>ACCOUNT ACCESS</th><th>CONTROLS</th><th>CHARGE</th></tr></thead><tbody><tr *ngFor="let customer of customers; trackBy: trackCustomer">
+        <td><div class="table-person"><span class="avatar table-avatar">{{ initials(customer) }}</span><span><strong>{{ fullName(customer) }}</strong><small>{{ customer.email || '—' }}</small></span></div></td><td>{{ username(customer) }}</td><td class="table-balance">{{ money(balance(customer)) }}</td>
+        <td><span class="table-status" [class.good-text]="accountActive(customer)" [class.bad-text]="!accountActive(customer)">{{ accountActive(customer) ? '● Active' : '● Inactive' }}</span><br><span class="table-status" [class.bad-text]="customer.frozen" [class.good-text]="!customer.frozen">{{ customer.frozen ? '● Frozen' : '● Unfrozen' }}</span></td>
+        <td><div class="control-buttons"><button class="button button-mini" [class.button-danger]="!customer.frozen" (click)="toggleFrozen(customer)">{{ customer.frozen ? 'Unfreeze' : 'Freeze' }}</button><button class="button button-mini" [class.button-danger]="accountActive(customer)" (click)="toggleActive(customer)">{{ accountActive(customer) ? 'Deactivate' : 'Activate' }}</button></div></td>
+        <td><form class="charge-form" (ngSubmit)="charge(customer)"><input type="number" min="0.01" step="0.01" [(ngModel)]="chargeAmounts[username(customer)]" name="charge-{{ username(customer) }}" placeholder="€ amount"><button class="button button-mini button-primary" [disabled]="busy || !chargeAmounts[username(customer)]">Apply</button></form></td>
+      </tr></tbody></table></div>
+    </section>
+    <div class="form-message dashboard-message" *ngIf="message" [class.message-error]="messageKind==='error'" [class.message-success]="messageKind==='success'">{{ message }}</div>
+  </main>
+  <footer class="page-footer"><span>© {{ year }} HIB BANK</span><span>Banking for the way life moves.</span><span>PRIVATE · SECURE · YOURS</span></footer>
+</div>

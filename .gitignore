@@ -37,3 +37,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### HIB web app local runtime files ###
+**/node_modules/
+frontend/dist/
+frontend/.angular/
+backend/.tools/
+backend/.app-run/
+backend/data/

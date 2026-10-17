@@ -1,0 +1,5 @@
+recipient,requesterId,senderId,senderUsername,description,amount,status,editable,createdAt,expiresAt
+"wasem","a5b89529-eade-4476-9acf-03a1ab0a07df","b9e47fc8-7392-4b36-aaa1-a3055237e2e0","w0rd","i need this money now","200","REJECTED","false","2026-10-18T00:36:20.644360700","2026-10-18T02:36:20.644360700"
+"wasem","02adc7fd-d1bb-4d40-adc4-a13c314fc1b0","b9e47fc8-7392-4b36-aaa1-a3055237e2e0","w0rd","send the money","100","PAID","false","2026-10-18T00:48:06.832755200","2026-10-18T01:18:06.832755200"
+"w0rd","421290de-eb2f-4734-bcdd-9f1abde11dd8","e292c841-68ab-4be4-a5cc-472ce15ce044","wasem","Your payment request to wasem was rejected.","200","REJECTED","false","2026-10-18T00:36:58.510707100","2026-10-18T00:36:58.510707100"
+"w0rd","6d0f4af1-f743-4e65-8211-9a983cd1efc9","e292c841-68ab-4be4-a5cc-472ce15ce044","wasem","send the money asap","234","PAID","true","2026-10-18T00:38:11.151393200","2026-10-18T02:38:11.151393200"

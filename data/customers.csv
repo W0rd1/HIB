@@ -1,0 +1,3 @@
+id,firstName,lastName,email,phoneNumber,address,country,username,password,balance,active,frozen
+"e292c841-68ab-4be4-a5cc-472ce15ce044","wasem","khaled","war","no","no","nl","wasem","hello","1134","true","false"
+"69abca19-d819-4332-aa67-6e2e4f4537e8","ward","khaled","wardkh0zs@gmail.com","0687372083","Agniesestraat 120A 3032TS, Rotterdam","Nl","w0rd","hello","0","true","false"
