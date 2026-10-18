@@ -64,6 +64,7 @@ If the JAR is not executable, run the main class through your IDE or configure t
 3. Select from the operations provided by the application.
 4. Enter the requested information.
 5. Follow the displayed instructions to complete each operation.
+6. set up environment variables in your system to login as admin (see .env file)
 
 The available commands and banking operations depend on the current implementation.
 
